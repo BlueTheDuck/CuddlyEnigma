@@ -1,0 +1,62 @@
+/* Main block  */
+div.block {
+    box-sizing: border-box;
+    max-width: 200px;
+    min-height: 3em;
+    border: 1px solid black;
+    border-bottom: 0px;
+    position: relative;
+    overflow: hidden;
+}
+/* Last block */
+div.block:last-child {
+    border-bottom: 1px solid black;
+}
+/* Block and stuff inside it */
+div.block, div.block > * {
+    font-family: consolas;
+    font-size: 15px;
+}
+/* Code  */
+div.block > textarea.value {
+    box-sizing: border-box;
+    border: 0px;
+    max-width: calc(100% - 1ch);
+    width: calc(100% - 1ch);
+    height: 3em;
+    position: relative;
+    left: 1ch;
+    top: 0px;
+}
+/* lil' quad */
+div.block > sub.type {/*[S] [E]*/
+    border: 1px solid black;
+    border-left: 0px;
+    border-bottom: 0px;
+    z-index: 1;
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+}
+/* Blocks inside if */
+div.if > div.block {
+    display: table-cell;
+    width: 100px;
+    border: 0px;
+    border-top: 1px solid black;
+}
+/* Block inside if that are false */
+div.if > div.block.f {
+    border-left: 1px solid black;
+}
+/* And that are true */
+div.if > div.block.t {
+    border-right: 1px solid black;
+}
+/* Textareas inside if */
+div.if > div.block > textarea.value {
+    left: 0px;
+    width: 100px;
+    min-width: 10px;
+    max-width: 100px;
+}
