@@ -47,11 +47,11 @@ div.if > div.block {
 }
 /* Block inside if that are false */
 div.if > div.block.f {
-    border-left: 1px solid black;
+     border-left: 1px solid black; 
 }
 /* And that are true */
 div.if > div.block.t {
-    border-right: 1px solid black;
+    border-left: 0px;
 }
 /* Textareas inside if */
 div.if > div.block > textarea.value {

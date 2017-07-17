@@ -1,5 +1,6 @@
 /*
 TODO:
+Add remove() method!
 Add interpreter
 Moar block types
 Add desktop test
@@ -9,7 +10,8 @@ Clean code
 
 */
 
-cout = console.log;
+
+var cout = console.log;
 
 var nextBlockId = 0;
 var blocks = [];
@@ -55,19 +57,13 @@ class CodeBlock {
         }
         //Position correction
         if(nextBlockId!=1&&parent!=undefined) {//Fortunatly we could do this with CSS... I can't believe it worked
-            /*var prev = blocks[Number(parent.id)];
-            if(prev.props.type=="IF") {
-                cout("It seems like we are inside an IF");
-                this.block.style.display = "table-cell";
-                this.block.style.width = "100px";
-            }*/
         }
         //Save on arr
         blocks.push(this);
     }
     /**
      * 
-     * @param {string} t - Type of block
+     * @param {string} t - Type of block: E,S,IF.
      */
     setType(t) {//E;S;... TODO: Add more types
         var type = t.toLowerCase();
@@ -76,15 +72,21 @@ class CodeBlock {
         switch(t) {
             case 'E':
             case 'S':
+                this.type.style.display = "";
                 this.type.innerText = t;
                 break;
             case 'IF':
-                this.type.remove();
+                this.type.style.display = "none";
                 this.props.joints[0] = {x:0,y:0};
                 this.props.joints[1] = {x:this.props.size.width/2,y:0};
                 break;
         }
     }
+    /**
+     * Append DOM (child) to this element.
+     * @param {HTMLElement} child - DOM to be appended
+     * @param {string} where - Depending on appending block, can vary values. Where to append
+     */
     addChild(child,where) {
         if(!(child instanceof HTMLElement)) {
             throw Error("Tried to childate a not childable child XD jaja imsofuny");
@@ -103,16 +105,30 @@ class CodeBlock {
             }
         }
     }
+    /**
+     * WIP!
+     */
     remove() {
-
+        cout("Imma still workin' on dis :3");
     }
-
+    /**
+     * Returns the main element
+     * @returns {HTMLElement} - DOM element of div.block
+     */
     getDOM() {
         return this.block;
     }
+    /**
+     * Returns the code
+     * @returns {string} - Code of textarea
+     */
     getCode() {
         return this.value.value;
     }
+    /**
+     * Sets the code that will be used
+     * @param {string} code - Code for the textarea
+     */
     setCode(code) {
         this.value.value = code;
     }
