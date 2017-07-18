@@ -55,6 +55,7 @@ div.if > div.block.t {
 }
 /* Textareas inside if */
 div.if > div.block > textarea.value {
+    top: 0px;
     left: 0px;
     width: 100px;
     min-width: 10px;

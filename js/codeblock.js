@@ -15,13 +15,14 @@ var cout = console.log;
 
 var nextBlockId = 0;
 var blocks = [];
+var blockOnHand = -1;//ID of block grabbed
 
 class CodeBlock {
     /**
      * @param {string} type 
      * @param {HTMLElement} parent 
      */
-    constructor(type,parent) {
+    constructor(parent) {
         ///DOMs\\\
         this.block = document.createElement("div");
         this.type = document.createElement("sub");
@@ -36,8 +37,9 @@ class CodeBlock {
         this.block.appendChild(this.type);
         //Object stuff
         this.props = {};
+        //These are not needed. Probably...
         this.props.size = {width:200,height:45};
-        this.props.joints = [{x:0,y:0}];//Normal blocks have 1 joint, but IF, while, do-while, for have more than one
+        this.props.joints = [{x:0,y:0}];//Normal blocks have 1 joint, but IF, while, do-while and for have more than one
         this.props.position = undefined;//If it's undefined, then it doesn't need correction
         this.props.children = [];//Here we'll save references to its children.
         /*
@@ -45,15 +47,15 @@ class CodeBlock {
             children[0] is True
             children[1] is False
             children[2] is OUT
+        something else:
+            children[0] is next block
         */
         this.props.parent = parent;
         //Event handlers
-        this.value.onmouseup = function() {
-            var id = Number(event.srcElement.parentElement.getAttribute("id"));
-            blocks[id].props.size.height = event.srcElement.parentElement.getBoundingClientRect().height;
-            blocks[id].props.joints[blocks[id].props.joints.length-1].y = event.srcElement.parentElement.getBoundingClientRect().height;
-            console.log("Block %i",id);
+        this.value.onmousedown = function() {//Set the ID of block being modified
+            blockOnHand = Number(event.srcElement.parentElement.getAttribute("id"));
         }
+        //this.value.onmouseup = 
         //Position correction
         if(nextBlockId!=1&&parent!=undefined) {//Fortunatly we could do this with CSS... I can't believe it worked
         }
@@ -88,7 +90,7 @@ class CodeBlock {
      */
     addChild(child,where) {
         if(!(child instanceof HTMLElement)) {
-            throw Error("Tried to childate a not childable child XD jaja imsofuny");
+            throw Error("Tried to childate a not childable child XD haha imsofuny");
         }
         switch(where){case 'T':case'F':case'OUT':break;default:throw Error("Invalid 'where'");}
         var childObj = blocks[Number(child.id)];
@@ -132,3 +134,26 @@ class CodeBlock {
         this.value.value = code;
     }
 }
+
+function positionCorrector() {//As mayor browsers don't support resize events, I'll attach this event to window
+    if(blockOnHand==-1)return;
+    blocks[blockOnHand].props.size.height = event.srcElement.parentElement.getBoundingClientRect().height;
+    blocks[blockOnHand].props.joints[blocks[blockOnHand].props.joints.length-1].y = event.srcElement.parentElement.getBoundingClientRect().height;
+    console.log("Block %i",blockOnHand);
+    var parentId = Number(blocks[blockOnHand].props.parent.id);
+    var parentBlock = blocks[parentId];
+    console.log("Parent is type '%s'",parentBlock.props.type);
+    if(parentBlock.props.type=="if") {
+        for(var i=0;i<2;i++) {
+            console.log(parentBlock);
+            if(parentBlock.props.children[i].id==blockOnHand)continue;
+            console.log(parentBlock.props.children[i]);
+            var b = Number(parentBlock.props.children[i].id);
+            blocks[b].value.style.height = blocks[blockOnHand].value.style.height;
+        }
+    } else {
+        console.log("No position correction needed");
+    }
+    blockOnHand = -1;
+}
+window.addEventListener("mouseup",positionCorrector);
