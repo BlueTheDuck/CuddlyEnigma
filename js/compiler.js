@@ -11,17 +11,20 @@ function createDom() {
     document.head.appendChild(codeDom);
     return 0;
 }
-
-function compile(code,autoremove) {
+/**
+ * Execute [code]
+ * @param {*} code 
+ * @param {*} autoremove 
+ * @param {codeExecCallback} cb Callback in
+ */
+function compile(code,autoremove) {/*return 1*/
+    if(document.getElementById("compiled")==null){createDom()}
     if(autoremove!=true&&autoremove!=false)
-        autoremove = autoremove | true;
-
-    var endCode = code;
+        autoremove = true;
+    var endCode = "var r; try{r = (function(){"+code+"})();}catch(e){r=false};";
     if(autoremove) {
         endCode +=";document.getElementById('compiled').remove()";
     }
-
-    if(document.getElementById("compiled")==null){createDom()}
 
     codeDom.innerHTML = endCode;
 }

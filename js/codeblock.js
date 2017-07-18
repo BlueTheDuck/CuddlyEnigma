@@ -18,7 +18,6 @@ var blocks = [];
 
 class CodeBlock {
     /**
-     * 
      * @param {string} type 
      * @param {HTMLElement} parent 
      */
