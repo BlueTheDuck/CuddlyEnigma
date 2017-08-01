@@ -1,6 +1,6 @@
 var code = document.getElementById("code");
 
-var parBlock = new CodeBlock();
+/*var parBlock = new CodeBlock();
 parBlock.setType("IF");
 parBlock.setCode("true");
 code.appendChild(parBlock.getDOM());
@@ -30,4 +30,7 @@ function compileBlockChan() {
         console.log(b);
         b = b.props.children[2];
     }
-}
+}*/
+var parBlock = new CodeBlock();
+code.appendChild(parBlock.getDOM());
+var sonBlock = new CodeBlock({parent:parBlock});

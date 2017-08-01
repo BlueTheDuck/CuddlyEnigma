@@ -16,13 +16,32 @@ var cout = console.log;
 var nextBlockId = 0;
 var blocks = [];
 var blockOnHand = -1;//ID of block grabbed
+var positions = {
+    "if": {
+        "t": 0,
+        "f": 1,
+        "out": 2
+    },
+    "e": {
+        "out": 0
+    },
+    "s": {
+        "out": 0
+    },
+    undefined: {
+        "out": 0
+    }
+}
 
 class CodeBlock {
     /**
-     * @param {string} type 
-     * @param {HTMLElement} parent 
+     * @param {Object} type Parent, type
      */
-    constructor(parent) {
+    constructor(options) {
+        if(options!=undefined) {
+            var parent = options.parent;
+            var type = options.type;
+        }
         ///DOMs\\\
         this.block = document.createElement("div");
         this.type = document.createElement("sub");
@@ -42,17 +61,21 @@ class CodeBlock {
         this.props.joints = [{x:0,y:0}];//Normal blocks have 1 joint, but IF, while, do-while and for have more than one
         this.props.position = undefined;//If it's undefined, then it doesn't need correction
         this.props.children = [];//Here we'll save references to its children.
-        /*
-        IF:
-            children[0] is True
-            children[1] is False
-            children[2] is OUT
-        something else:
-            children[0] is next block
-        */
-        if(parent!=undefined) {
-            var parentB = blocks[Number(parent.id)];
+        if(parent!=undefined&&parent instanceof CodeBlock) {
+            var parentB = parent.getCode();
             //KEEP WORKIN' HERE
+            let parType = parent.props.type;
+            let childTypes = positions[parType];
+            if(parent.props.children.length==childTypes.length) {
+                throw Error("Parent has achieved max childrens");
+            }
+            parBlock.addChild(this,'T');
+            console.log("Addin' child");
+            /*for(p of childTypes) {
+                if(parent.props.child[p]!=undefined) {
+                    parent.props.child[p] = this;
+                }
+            }*/
         }
         this.props.parent = parent;
         //Event handlers
@@ -93,15 +116,27 @@ class CodeBlock {
      * @param {string} where - Depending on appending block, can vary values. Where to append
      */
     addChild(child,where) {
-        if(!(child instanceof HTMLElement)) {
+        if(!(child instanceof CodeBlock)) {
             throw Error("Tried to childate a not childable child XD haha imsofuny");
         }
-        switch(where){case 'T':case'F':case'OUT':break;default:throw Error("Invalid 'where'");}
+        var pos = positions[this.props.type];
+        if(where==undefined) {
+            console.log("No position defined");
+            for(p of pos) {
+                if(this.props.children[p]==undefined) {
+                    this.addChild(child,p);
+                    return;
+                }
+            }
+        }
+        //switch(where){case 'T':case'F':case'OUT':break;default:throw Error("Invalid 'where'");}
         var childObj = blocks[Number(child.id)];
         if(this.props.type=="if") {
-            let pos = {T:0,F:1,OUT:2}
-            this.props.children[pos[where]] = child;
-            if(where=='T'||where=='F') {
+            
+            if(this.props.children[pos[where]]!=undefined) {
+                this.props.children[pos[where]] = child;
+            }
+            if(where.match(/^(T|F)$/gi)) {
                 child.style.left = this.props.joints[pos[where]];
                 child.classList+=" "+where.toLowerCase();
                 this.block.appendChild(child);
