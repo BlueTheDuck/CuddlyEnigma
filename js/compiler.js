@@ -71,5 +71,6 @@ function syntaxCheck(code) {//TODO: Check "'" and """ names in English
             return false,"Unmatching "+(trackPairsOpen+trackIpairs)[i]+". Missing "+(trackPairsClose+trackIpairs)[i];
         }
     }
-    return isvalid;
+    return true;
 }
+

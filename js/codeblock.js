@@ -50,6 +50,10 @@ class CodeBlock {
         something else:
             children[0] is next block
         */
+        if(parent!=undefined) {
+            var parentB = blocks[Number(parent.id)];
+            //KEEP WORKIN' HERE
+        }
         this.props.parent = parent;
         //Event handlers
         this.value.onmousedown = function() {//Set the ID of block being modified

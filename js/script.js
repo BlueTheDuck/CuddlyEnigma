@@ -21,8 +21,13 @@ parBlock.addChild(blockChan.getDOM(),'T');
 parBlock.addChild(falseBlock.getDOM(),'F');
 parBlock.addChild(blockSenpai.getDOM(),'OUT');
 
+var code = {};
 //When you are so bored...
 function compileBlockChan() {
     console.log("Senpai: I will compile you, blockChan");
-    
+    var b = parBlock;
+    while(b.props.children!=undefined) {
+        console.log(b);
+        b = b.props.children[2];
+    }
 }
