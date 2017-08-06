@@ -32,5 +32,5 @@ function compileBlockChan() {
     }
 }*/
 var parBlock = new CodeBlock();
-code.appendChild(parBlock.getDOM());
-var sonBlock = new CodeBlock({parent:parBlock});
+code.appendChild(parBlock.block);
+var sonBlock = new CodeBlock({parent:parBlock,type:'s'});

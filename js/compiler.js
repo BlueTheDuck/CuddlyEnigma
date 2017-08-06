@@ -74,3 +74,23 @@ function syntaxCheck(code) {//TODO: Check "'" and """ names in English
     return true;
 }
 
+var tree = [];
+function listChildren(block) {
+    if(!(block instanceof CodeBlock)) {
+        throw Error("Invalid block");
+    }
+    var children = {};
+    
+}
+/*
+tree = [
+    0: [
+        1,
+        2,
+    ],
+    3
+]
+
+
+
+*/

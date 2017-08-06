@@ -34,6 +34,73 @@ var positions = {
 }
 
 class CodeBlock {
+    
+    /**
+     * 
+     * @param {string} t - Type of block: E,S,IF.
+     */
+    setType(t) {//E;S;IF... TODO: Add more types
+        var type = t.toLowerCase();
+        this.props.type = type;
+        this.block.setAttribute("class","block "+type);
+        if(positions[t]==undefined) {throw Error("Invalid blocktype");}
+        switch(type) {
+            case 'e':
+            case 's':
+                this.type.style.display = "";
+                this.type.innerText = t;
+                break;
+            case 'if':
+                this.type.style.display = "none";
+                /*this.props.joints[0] = {x:0,y:0};
+                this.props.joints[1] = {x:this.props.size.width/2,y:0};*/
+                break;
+        }
+    }
+    
+    /**
+     * Append DOM (child) to this element.
+     * @param {HTMLElement} child - DOM to be appended
+     * @param {string} where - Depending on appending block, can vary values. Where to append
+     */
+    addChild(child,where) {
+        if(!(child instanceof CodeBlock)) {
+            throw Error("Tried to childate a not childable child XD haha imsofuny");
+        }
+        var pos = positions[this.type.value];
+        if(where==undefined) {
+            console.log("No position defined");
+            for(var p in pos) {
+                if(this.props.children[pos[p]]==undefined) {
+                    this.addChild(child,p);
+                    console.log("Found place at "+p);
+                    return;
+                }
+            }
+        }
+        //switch(where){case 'T':case'F':case'OUT':break;default:throw Error("Invalid 'where'");}
+        //var childObj = blocks[Number(child.id)];
+        if(this.props.type=="if") {
+            if(this.props.children[pos[where]]!=undefined) {
+                this.props.children[pos[where]] = child;
+            }
+            if(where.match(/^(T|F)$/gi)) {
+                child.style.left = this.props.joints[pos[where]];
+                child.classList+=" "+where.toLowerCase();
+                this.block.appendChild(child);
+            } else if(where=="OUT") {
+                this.block.parentElement.appendChild(child);
+            }
+        }
+        if(this.props.type=="s"||this.props.type=="e") {
+            if(this.props.children[pos[where]] instanceof CodeBlock) {
+                throw Error("Space "+where+" already occupied. Can't append child");
+            }
+            this.props.children[pos[where]] = child;
+            this.block.parentElement.appendChild(child.block);
+        }
+    }
+
     /**
      * @param {Object} type Parent, type
      */
@@ -56,24 +123,27 @@ class CodeBlock {
         this.block.appendChild(this.type);
         //Object stuff
         this.props = {};
+        //this.props.type = type||"s";
+        this.setType(type||"s");
         //These are not needed. Probably...
         this.props.size = {width:200,height:45};
         this.props.joints = [{x:0,y:0}];//Normal blocks have 1 joint, but IF, while, do-while and for have more than one
         this.props.position = undefined;//If it's undefined, then it doesn't need correction
         this.props.children = [];//Here we'll save references to its children.
         if(parent!=undefined&&parent instanceof CodeBlock) {
-            var parentB = parent.getCode();
+            
             //KEEP WORKIN' HERE
             let parType = parent.props.type;
             let childTypes = positions[parType];
             if(parent.props.children.length==childTypes.length) {
                 throw Error("Parent has achieved max childrens");
             }
-            parBlock.addChild(this,'T');
+            parent.addChild(this);
             console.log("Addin' child");
-            /*for(p of childTypes) {
+            /*for(p in childTypes) {
                 if(parent.props.child[p]!=undefined) {
                     parent.props.child[p] = this;
+                    break;
                 }
             }*/
         }
@@ -82,95 +152,10 @@ class CodeBlock {
         this.value.onmousedown = function() {//Set the ID of block being modified
             blockOnHand = Number(event.srcElement.parentElement.getAttribute("id"));
         }
-        //this.value.onmouseup = 
         //Position correction
         if(nextBlockId!=1&&parent!=undefined) {//Fortunatly we could do this with CSS... I can't believe it worked
         }
-        //Save on arr
         blocks.push(this);
-    }
-    /**
-     * 
-     * @param {string} t - Type of block: E,S,IF.
-     */
-    setType(t) {//E;S;... TODO: Add more types
-        var type = t.toLowerCase();
-        this.props.type = type;
-        this.block.setAttribute("class","block "+type);
-        switch(t) {
-            case 'E':
-            case 'S':
-                this.type.style.display = "";
-                this.type.innerText = t;
-                break;
-            case 'IF':
-                this.type.style.display = "none";
-                this.props.joints[0] = {x:0,y:0};
-                this.props.joints[1] = {x:this.props.size.width/2,y:0};
-                break;
-        }
-    }
-    /**
-     * Append DOM (child) to this element.
-     * @param {HTMLElement} child - DOM to be appended
-     * @param {string} where - Depending on appending block, can vary values. Where to append
-     */
-    addChild(child,where) {
-        if(!(child instanceof CodeBlock)) {
-            throw Error("Tried to childate a not childable child XD haha imsofuny");
-        }
-        var pos = positions[this.props.type];
-        if(where==undefined) {
-            console.log("No position defined");
-            for(p of pos) {
-                if(this.props.children[p]==undefined) {
-                    this.addChild(child,p);
-                    return;
-                }
-            }
-        }
-        //switch(where){case 'T':case'F':case'OUT':break;default:throw Error("Invalid 'where'");}
-        var childObj = blocks[Number(child.id)];
-        if(this.props.type=="if") {
-            
-            if(this.props.children[pos[where]]!=undefined) {
-                this.props.children[pos[where]] = child;
-            }
-            if(where.match(/^(T|F)$/gi)) {
-                child.style.left = this.props.joints[pos[where]];
-                child.classList+=" "+where.toLowerCase();
-                this.block.appendChild(child);
-            } else {
-                this.block.parentElement.appendChild(child);
-            }
-        }
-    }
-    /**
-     * WIP!
-     */
-    remove() {
-        cout("Imma still workin' on dis :3");
-    }
-    /**
-     * Returns the main element
-     * @returns {HTMLElement} - DOM element of div.block
-     */
-    getDOM() {
-        return this.block;
-    }
-    /**
-     * Returns the code
-     * @returns {string} - Code of textarea
-     */
-    getCode() {
-        return this.value.value;
-    }
-    /**
-     * Sets the code that will be used
-     * @param {string} code - Code for the textarea
-     */
-    setCode(code) {
-        this.value.value = code;
     }
 }
 
